@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:portfolio_app/providers/profile_provider.dart';
 import '../theme/app_theme.dart';
 import '../models/portfolio_data.dart';
 import '../widgets/shared_widgets.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final Function(int)? onNavigate;
+  const HomeScreen({super.key, this.onNavigate});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -35,8 +39,28 @@ class _HomeScreenState extends State<HomeScreen>
     super.dispose();
   }
 
+  Future<void> _openGitHub(String url) async {
+    final Uri uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } else {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text("Could not open GitHub"),
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: Colors.redAccent,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          ),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final profile = context.watch<ProfileProvider>();
+
     return Scaffold(
       body: Stack(
         children: [
@@ -90,7 +114,12 @@ class _HomeScreenState extends State<HomeScreen>
                                 ),
                               ],
                             ),
-                            const AvatarWidget(size: 42, initials: "AM"),
+                            AvatarWidget(
+                              size: 42,
+                              initials: profile.name.isNotEmpty
+                                  ? profile.name.substring(0, 2).toUpperCase()
+                                  : "MS",
+                            ),
                           ],
                         ),
                       ),
@@ -105,8 +134,7 @@ class _HomeScreenState extends State<HomeScreen>
                           children: [
                             Row(
                               children: [
-                                // ✅ CORRECT
-                                  StatusDot(color: kAccentGreen(context)),
+                                StatusDot(color: kAccentGreen(context)),
                                 const SizedBox(width: 8),
                                 Text(
                                   "Available for work",
@@ -129,7 +157,7 @@ class _HomeScreenState extends State<HomeScreen>
                               ),
                             ),
                             GradientText(
-                              PortfolioData.name,
+                              profile.name,
                               style: GoogleFonts.spaceGrotesk(
                                 fontSize: 38,
                                 fontWeight: FontWeight.w800,
@@ -139,7 +167,7 @@ class _HomeScreenState extends State<HomeScreen>
                             ),
                             const SizedBox(height: 14),
                             Text(
-                              PortfolioData.title,
+                              profile.title,
                               style: GoogleFonts.inter(
                                 fontSize: 16,
                                 color: kTextSecondary(context),
@@ -149,7 +177,7 @@ class _HomeScreenState extends State<HomeScreen>
                             ),
                             const SizedBox(height: 24),
                             Text(
-                              PortfolioData.about,
+                              profile.about,
                               style: GoogleFonts.inter(
                                 fontSize: 14,
                                 color: kTextMuted(context),
@@ -180,7 +208,7 @@ class _HomeScreenState extends State<HomeScreen>
 
                     const SliverToBoxAdapter(child: SizedBox(height: 36)),
 
-                    // Quick nav cards
+                    // Quick nav section header
                     SliverToBoxAdapter(
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -190,6 +218,8 @@ class _HomeScreenState extends State<HomeScreen>
                         ),
                       ),
                     ),
+
+                    // Quick nav cards
                     SliverPadding(
                       padding: const EdgeInsets.fromLTRB(24, 0, 24, 32),
                       sliver: SliverGrid(
@@ -198,7 +228,7 @@ class _HomeScreenState extends State<HomeScreen>
                           crossAxisCount: 2,
                           crossAxisSpacing: 12,
                           mainAxisSpacing: 12,
-                          childAspectRatio: 1.35,
+                          childAspectRatio: 1.4,
                         ),
                         delegate: SliverChildListDelegate([
                           _quickNav(
@@ -206,24 +236,28 @@ class _HomeScreenState extends State<HomeScreen>
                             label: "Profile",
                             sub: "Skills & Experience",
                             color: AppTheme.accent,
+                            onTap: () => widget.onNavigate?.call(1),
                           ),
                           _quickNav(
                             icon: Icons.grid_view_rounded,
                             label: "Projects",
                             sub: "${PortfolioData.projects.length} works",
                             color: AppTheme.accentWarm,
+                            onTap: () => widget.onNavigate?.call(2),
                           ),
                           _quickNav(
                             icon: Icons.mail_rounded,
                             label: "Contact",
                             sub: "Get in touch",
                             color: kAccentGreen(context),
+                            onTap: () => widget.onNavigate?.call(3),
                           ),
                           _quickNav(
                             icon: Icons.code_rounded,
                             label: "GitHub",
                             sub: "Open Source",
                             color: const Color(0xFFE2A84B),
+                            onTap: () => _openGitHub(profile.github),
                           ),
                         ]),
                       ),
@@ -270,8 +304,10 @@ class _HomeScreenState extends State<HomeScreen>
     required String label,
     required String sub,
     required Color color,
+    VoidCallback? onTap,
   }) {
     return GlassCard(
+      onTap: onTap,
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

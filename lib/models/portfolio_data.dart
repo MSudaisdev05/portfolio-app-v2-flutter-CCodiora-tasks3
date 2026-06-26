@@ -1,21 +1,21 @@
 // ─── Portfolio Data Models ────────────────────────────────────────────────
 
 class PortfolioData {
-  static const String name = "Alex Morgan";
-  static const String title = "Full-Stack Developer & UI Designer";
+  static const String name = "Muhammad Sudais";
+  static const String title = "Flutter & AI Developer";
   static const String tagline = "Crafting digital experiences that matter.";
   static const String about =
-      "I'm a passionate developer with 5+ years of experience building "
-      "scalable web and mobile applications. I love solving complex problems "
-      "with clean, elegant code and designing interfaces that feel effortless.";
+      "I'm a Comuter Science student passionate about software development,web technologies, and artificial inteligence.  "
+      "I enjoy building practical projects,lerning new technologies, and solving realworld problems through programming. "
+      "I am always eager to learn, collaborate, and grow as a future software engineer.";
 
-  static const String email = "alex.morgan@email.com";
-  static const String phone = "+1 (555) 234-5678";
-  static const String location = "San Francisco, CA";
-  static const String website = "https://alexmorgan.dev";
-  static const String github = "https://github.com/alexmorgan";
-  static const String linkedin = "https://linkedin.com/in/alexmorgan";
-  static const String twitter = "https://twitter.com/alexmorgan_dev";
+  static const String email = "msudais.dev05@gmail.com";
+  static const String phone = "03185425200";
+  static const String location = "Nowshrea,KpK,Pakistan ";
+  static const String website = "https://sudais.dev";
+  static const String github = "https://github.com/MSudaisdev05";
+  static const String linkedin = "https://www.linkedin.com/in/muhammad-sudais-5b2423384/";
+  static const String twitter = "https://x.com/MsudaisDev05";
 
   static const List<Skill> skills = [
     Skill("Flutter", 92, SkillCategory.mobile),

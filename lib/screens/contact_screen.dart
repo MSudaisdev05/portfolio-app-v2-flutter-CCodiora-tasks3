@@ -89,7 +89,7 @@ class ContactScreen extends StatelessWidget {
                       children: [
                         // ✅ CORRECT
                           StatusDot(color: kAccentGreen(context)),
-                          const SizedBox(width: 8),
+          const SizedBox(width: 8),
                         Text(
                           "Available for freelance & full-time",
                           style: GoogleFonts.inter(

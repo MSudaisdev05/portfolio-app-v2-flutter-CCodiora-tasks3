@@ -17,14 +17,6 @@ class MainShell extends StatefulWidget {
 class _MainShellState extends State<MainShell> {
   int _currentIndex = 0;
 
-  // ✅ CORRECT
-final List<Widget> _screens = [
-  const HomeScreen(),
-  const ProfileScreen(),
-  const ProjectsScreen(),
-  const ContactScreen(),
-];
-
   final List<_NavItem> _navItems = const [
     _NavItem(Icons.home_rounded, Icons.home_outlined, "Home"),
     _NavItem(Icons.person_rounded, Icons.person_outline_rounded, "Profile"),
@@ -35,8 +27,17 @@ final List<Widget> _screens = [
   @override
   Widget build(BuildContext context) {
     final themeProvider = context.watch<ThemeProvider>();
+
+    // ✅ Screens list inside build method so setState works correctly
+    final List<Widget> screens = [
+      HomeScreen(onNavigate: (index) => setState(() => _currentIndex = index)),
+      const ProfileScreen(),
+      const ProjectsScreen(),
+      const ContactScreen(),
+    ];
+
     return Scaffold(
-      body: IndexedStack(index: _currentIndex, children: _screens),
+      body: IndexedStack(index: _currentIndex, children: screens),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: kSurface(context),
@@ -57,32 +58,75 @@ final List<Widget> _screens = [
                     behavior: HitTestBehavior.opaque,
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 220),
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
                       decoration: BoxDecoration(
-                        color: selected ? kAccent(context).withOpacity(0.12) : Colors.transparent,
+                        color: selected
+                            ? kAccent(context).withOpacity(0.12)
+                            : Colors.transparent,
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: Column(mainAxisSize: MainAxisSize.min, children: [
-                        Icon(selected ? item.activeIcon : item.inactiveIcon, size: 22, color: selected ? kAccent(context) : kTextMuted(context)),
-                        const SizedBox(height: 4),
-                        Text(item.label, style: GoogleFonts.inter(fontSize: 10, fontWeight: selected ? FontWeight.w600 : FontWeight.w400, color: selected ? kAccent(context) : kTextMuted(context))),
-                      ]),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            selected ? item.activeIcon : item.inactiveIcon,
+                            size: 22,
+                            color: selected
+                                ? kAccent(context)
+                                : kTextMuted(context),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            item.label,
+                            style: GoogleFonts.inter(
+                              fontSize: 10,
+                              fontWeight: selected
+                                  ? FontWeight.w600
+                                  : FontWeight.w400,
+                              color: selected
+                                  ? kAccent(context)
+                                  : kTextMuted(context),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   );
                 }),
-                // Theme toggle in nav bar
+
+                // Theme toggle
                 GestureDetector(
                   onTap: () => themeProvider.toggle(),
                   behavior: HitTestBehavior.opaque,
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 220),
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    decoration: BoxDecoration(color: Colors.transparent, borderRadius: BorderRadius.circular(12)),
-                    child: Column(mainAxisSize: MainAxisSize.min, children: [
-                      Icon(themeProvider.isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded, size: 22, color: kTextMuted(context)),
-                      const SizedBox(height: 4),
-                      Text(themeProvider.isDark ? "Light" : "Dark", style: GoogleFonts.inter(fontSize: 10, color: kTextMuted(context))),
-                    ]),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: Colors.transparent,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          themeProvider.isDark
+                              ? Icons.light_mode_rounded
+                              : Icons.dark_mode_rounded,
+                          size: 22,
+                          color: kTextMuted(context),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          themeProvider.isDark ? "Light" : "Dark",
+                          style: GoogleFonts.inter(
+                            fontSize: 10,
+                            color: kTextMuted(context),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
